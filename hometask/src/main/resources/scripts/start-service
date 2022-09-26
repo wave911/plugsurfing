@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+JAVA_OPTS="-Xms64m \
+               -Xmx384m \
+               -XX:MaxTenuringThreshold=2 \
+               -XX:SurvivorRatio=8 \
+               -XX:+UnlockDiagnosticVMOptions \
+               -XX:ParGCCardsPerStrideChunk=32768 \
+               -XX:+AlwaysPreTouch \
+               -XX:-OmitStackTraceInFastThrow \
+               -XX:ParallelGCThreads=4 \
+               -XX:ConcGCThreads=4"
+exec java ${JAVA_OPTS} -server -jar /opt/musify/@project.artifactId@.jar

@@ -1,0 +1,40 @@
+version: '2'
+services:
+  redis:
+    container_name: redis-plugsurfing
+    image: redis:5.0
+    command: redis-server --requirepass testpass
+    ports:
+      - "6379:6379"
+  musify:
+    image: docker-local.musify/hometask:0.0.1-SNAPSHOT
+    environment:
+      REDIS_HOSTNAME: redis-plugsurfing
+      REDIS_PORT: "6379"
+      REDIS_PREFIX: leastconn
+      REDIS_PASSWORD: testpass
+      REDIS_USE_SSL: "false"
+    cpu_shares: 100
+    mem_limit: 524288000
+    restart: always
+    links:
+      - redis
+    depends_on:
+      - redis
+    ports:
+      - "8080:8080"
+  lb:
+    image: dockercloud/haproxy
+    environment:
+      VIRTUAL_HOST_WEIGHT: 5
+      BALANCE: leastconn
+    links:
+      - redis
+      - musify
+    depends_on:
+      - redis
+      - musify
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8080:8080"
